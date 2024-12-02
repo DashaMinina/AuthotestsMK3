@@ -1,57 +1,63 @@
 import time
 
+import allure
+import pytest
+from allure_commons.types import Severity
 from appium.webdriver.common.appiumby import AppiumBy
 
 from config.appium_utils import initialize_appium_driver
+from config.base_page import BasePage
 
-
+@pytest.mark.БыстрыйЦикл
+@allure.tag("Входящий поток")
+@allure.severity(Severity.CRITICAL)
+@allure.id("#6357")
+@allure.label("owner", "Daria Tomilova")
+@allure.feature("Размещение")
+@allure.story("Размещение МХ - базовые настройки")
 def test_placement():
-
     driver = initialize_appium_driver()
     driver.implicitly_wait(50)
+    base_page = BasePage(driver)
 
-    driver.find_element(AppiumBy.ID, "ru.axelot.mobileupdater:id/connect_button").click()
-    time.sleep(6)
-    start_x = 200
-    start_y = 600
-    end_x = 200
-    end_y = 100
-    duration = 400  # Время анимации свайпа в миллисекундах
-    driver.swipe(start_x, start_y, end_x, end_y, duration)
-    driver.swipe(start_x, start_y, end_x, end_y, duration)
-    driver.swipe(start_x, start_y, end_x, end_y, duration)
-    driver.swipe(start_x, start_y, end_x, end_y, duration)
-    driver.swipe(start_x, start_y, end_x, end_y, duration)
+    try:
+        with allure.step("Авторизация в Axelot Start"):
+            base_page.authorization_start()
+            time.sleep(5)
+        with allure.step("Поиск нужной базы в списке доступных баз"):
+            base_page.scroll_into_veiw_base_and_click('WMSBaseTestDI')
+        with allure.step("Авторизация в МК3"):
+            base_page.authorization_MK('1', '1')
+            time.sleep(6)
+        with allure.step("Открыть ОЗ «Размещение МХ (базовые настройки)» в меню «Размещение»."):
+            base_page.select_task_queue('Размещение', 'Размещение МХ (базовые настройки)')
+        with allure.step("Отсканировать ШК указанного на ТСД МХ (EUR-000000314)."):
+            base_page.type_value('EUR-000000314')
+        with allure.step("Проверка значений в полученной задаче"):
+            assert driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/position1_value").text == 'B-2-1'
+        with allure.step("Отсканировать ШК ячейки размещения (B21)."):
+            base_page.type_value('B21')
+        with allure.step("Проверка значений в новой полученной задаче"):
+            assert driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/position_value").text == 'EUR-000000315'
+        with allure.step("Отсканировать ШК указанного на ТСД МХ (EUR-000000315)."):
+            base_page.type_value('EUR-000000315')
+        with allure.step("Проверка значений в новой полученной задаче"):
+            assert driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/position1_value").text == 'B-2-2'
+        with allure.step("Отсканировать ШК ячейки размещения (B22)."):
+            base_page.type_value('B22')
+        with allure.step("Проверка значений в новой полученной задаче"):
+            base_page.assert_finish_sku_picking()
 
-    driver.find_element(AppiumBy.XPATH,
-                        "//android.widget.TextView[@resource-id='ru.axelot.mobileupdater:id/config_title' and @text='WMSBaseTestDI']").click()
-    driver.find_element(AppiumBy.XPATH,
-                        "//android.widget.TextView[@resource-id='ru.axelot.mobileupdater:id/config_title' and @text='WMSBaseTestDI']").click()
-
-    driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/login_input").send_keys('1')
-    driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/password_input").send_keys('1')
-    driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/connect_button").click()
-    time.sleep(6)
-    driver.find_element(AppiumBy.XPATH,
-                        "//android.widget.TextView[@resource-id='ru.axelot.wmsx5:id/action_text' and @text='Размещение']").click()
-    driver.find_element(AppiumBy.XPATH,
-                        "//android.widget.TextView[@resource-id='ru.axelot.wmsx5:id/action_text' and @text='Размещение МХ (базовые настройки)']").click()
-    driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/editText_bottom_panel").send_keys('EUR-000000314')
-    driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/button_bottom_panel").click()
-    time.sleep(2)
-    assert driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/position1_value").text == 'B-2-1'
-    driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/editText_bottom_panel").send_keys('B21')
-    driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/button_bottom_panel").click()
-    time.sleep(2)
-    assert driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/position_value").text == 'EUR-000000315'
-    driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/editText_bottom_panel").send_keys('EUR-000000315')
-    driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/button_bottom_panel").click()
-    time.sleep(2)
-    assert driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/position1_value").text == 'B-2-2'
-    driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/editText_bottom_panel").send_keys('B22')
-    driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/button_bottom_panel").click()
-    time.sleep(2)
-
+    except Exception as ex:
+        print (ex)
+        allure.attach(
+            driver.get_screenshot_as_png(),
+            name="Скриншот ошибки",
+            attachment_type=allure.attachment_type.PNG
+        )
+        raise
+    # finally:
+    #     driver.quit()
 
 
 

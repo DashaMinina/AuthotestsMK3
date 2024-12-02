@@ -18,3 +18,4 @@ def initialize_appium_driver():
         })
     driver = webdriver.Remote('http://192.168.0.107:4723', options=options)
     return driver
+

@@ -67,6 +67,9 @@ class BasePage:
 
     def select_document(self, element):
         # Выбор документа из списка
+
+        # Добавить скролл до документа
+
         self.driver.find_element(AppiumBy.XPATH,
                             f"//android.widget.TextView[@resource-id='ru.axelot.wmsx5:id/document_title' and @text='{element}']").click()
 
@@ -92,6 +95,8 @@ class BasePage:
         # Завершить приемку при активной настройке Закрыть поступление при входе - Спросить пользователя
 
         # добавить проверку на текст по разным операциям  - Завершить приемку, Грузовое место отгружено?
+        self.driver.back()
+        self.driver.back()
         assert self.driver.find_element(AppiumBy.ID,
                                    "android:id/message").text == 'Завершить приемку ожидаемого поступления? (все товары приняты)'
         self.driver.find_element(AppiumBy.ID, "android:id/button1").click()
@@ -120,4 +125,5 @@ class BasePage:
 
     def finish_receipt_by_lines_with_discrepancies(self):
         # Подтвердить завершение контроля поступления с расхождениями
+
         self.driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/button_positive").click()

@@ -1,0 +1,8 @@
+[tool.pytest.ini_options]
+addopts = "--alluredir=allure-results"
+markers = [
+    "БыстрыйЦикл: Быстрый цикл",
+    "ВходящийПоток: ",
+    "ИсходящийПоток: ",
+    "ВнутренниеОперации: "
+]
