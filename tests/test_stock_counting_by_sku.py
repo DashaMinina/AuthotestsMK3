@@ -1,10 +1,13 @@
 import time
+
 import allure
 import pytest
 from allure_commons.types import Severity
 from appium.webdriver.common.appiumby import AppiumBy
-from config.appium_utils import initialize_appium_driver
+
 from config.base_page import BasePage
+from conftest import mobile_management
+
 
 @pytest.mark.БыстрыйЦикл
 @allure.tag("Внутренние операции")
@@ -13,8 +16,8 @@ from config.base_page import BasePage
 @allure.label("owner", "Daria Tomilova")
 @allure.feature("Инвентаризация состава")
 @allure.story("Инвентаризация состава - базовые настройки, МУ Основная и по СГ")
-def test_stock_counting_by_sku():
-    driver = initialize_appium_driver()
+def test_stock_counting_by_sku(mobile_management):
+    driver = mobile_management
     driver.implicitly_wait(50)
     base_page = BasePage(driver)
     try:
@@ -30,17 +33,22 @@ def test_stock_counting_by_sku():
             base_page.select_task_queue('Регламент', 'Инвентаризация состава (базовые настройки)')
         with allure.step("Отсканировать ШК ячейки 1-1-3-1"):
             base_page.type_value('1131')
+        with allure.step("Проверка перехода к следующему полю"):
+            assert driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/location2_value").get_attribute("clickable") == 'false'
         with allure.step("Отсканировать ШК МХ, которое находится в ячейке EUR-000000111"):
             base_page.type_value('EUR-000000111')
+        with allure.step("Проверка перехода к следующему полю"):
+            assert driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/sku_value").get_attribute("clickable") == 'false'
         with allure.step("Отсканировать ШК ОХ 'Наушники' 2620424001643."):
             base_page.type_value('2620424001643')
         with allure.step("Ввести плановое количество товара"):
             base_page.type_value('100')
         with allure.step("Отсканировать ШК МХ, которое находится в ячейке EUR-000000111"):
             base_page.type_value('EUR-000000111')
+        with allure.step("Проверка перехода к следующему полю"):
+            assert driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/sku_value").get_attribute("clickable") == 'false'
         with allure.step("Отсканировать ШК ОХ 'Средство для чистки объективов' 2704065335623."):
             base_page.type_value('2704065335623')
-            time.sleep(1)
         with allure.step("Выбрать партию '18092024' из списка."):
             base_page.type_value('18092024')
         with allure.step("Ввести плановое количество товара"):

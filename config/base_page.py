@@ -3,6 +3,7 @@ import time
 from appium.webdriver.common.appiumby import AppiumBy
 from appium.webdriver.webdriver import WebDriver
 from selenium.common import NoSuchElementException
+from selenium.webdriver import ActionChains
 
 
 class BasePage:
@@ -18,9 +19,9 @@ class BasePage:
 
     def authorization_start(self,login = 'admin',password = 'admin', address = '192.168.101.9:5275'):
         # Авторизация в AxelotStart
-        # self.driver.find_element(AppiumBy.ID, "ru.axelot.mobileupdater:id/login_edit").send_keys(login)
-        # self.driver.find_element(AppiumBy.ID, "ru.axelot.mobileupdater:id/password_edit").send_keys(password)
-        # self.driver.find_element(AppiumBy.ID, "ru.axelot.mobileupdater:id/address_edit").send_keys(address)
+        self.driver.find_element(AppiumBy.ID, "ru.axelot.mobileupdater:id/login_edit").send_keys(login)
+        self.driver.find_element(AppiumBy.ID, "ru.axelot.mobileupdater:id/password_edit").send_keys(password)
+        self.driver.find_element(AppiumBy.ID, "ru.axelot.mobileupdater:id/address_edit").send_keys(address)
         self.driver.find_element(AppiumBy.ID, "ru.axelot.mobileupdater:id/connect_button").click()
         time.sleep(2)
 
@@ -40,8 +41,8 @@ class BasePage:
                 if target_element.is_displayed():
                     self.driver.find_element(AppiumBy.XPATH,
                                              f"//android.widget.TextView[@resource-id='ru.axelot.mobileupdater:id/config_title' and @text='{element}']").click()
-                    self.driver.find_element(AppiumBy.XPATH,
-                                             f"//android.widget.TextView[@resource-id='ru.axelot.mobileupdater:id/config_title' and @text='{element}']").click()
+                    # self.driver.find_element(AppiumBy.XPATH,
+                    #                          f"//android.widget.TextView[@resource-id='ru.axelot.mobileupdater:id/config_title' and @text='{element}']").click()
                     break
             except NoSuchElementException:
                 self.driver.swipe(start_x=200, start_y=600, end_x=200, end_y=100, duration=300)
@@ -127,3 +128,26 @@ class BasePage:
         # Подтвердить завершение контроля поступления с расхождениями
 
         self.driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/button_positive").click()
+
+    def select_value_from_list(self, element):
+        # Выбрать элемент из списка через удерживание на поле ввода данных
+        clickable = self.driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/editText_bottom_panel")
+        ActionChains(self.driver) \
+            .click_and_hold(clickable) \
+            .perform()
+        self.driver.find_element(AppiumBy.XPATH, f"//android.widget.LinearLayout[@content-desc='{element}']/android.view.ViewGroup").click()
+
+
+    def long_press(self):
+
+        element = self.driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/editText_bottom_panel")
+        action = ActionChains(self.driver)
+        click = ActionChains(self.driver)
+        action.click_and_hold(element)
+        action.perform()
+        time.sleep(4)
+        action.release(element)
+        action.perform()
+        time.sleep(0.2)
+        action.release(element)
+

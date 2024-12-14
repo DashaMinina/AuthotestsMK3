@@ -3,18 +3,20 @@ import allure
 import pytest
 from allure_commons.types import Severity
 from appium.webdriver.common.appiumby import AppiumBy
-from config.appium_utils import initialize_appium_driver
+
 from config.base_page import BasePage
+from conftest import mobile_management
+
 
 @pytest.mark.БыстрыйЦикл
 @allure.tag("Исходящий поток")
 @allure.severity(Severity.CRITICAL)
-@allure.id("#6190")
+@allure.id("6190")
 @allure.label("owner", "Daria Tomilova")
 @allure.feature("Упаковка")
 @allure.story("Свободная упаковка - базовые настройки, МУ Основная, по партиям и по СГ")
-def test_free_packing():
-    driver = initialize_appium_driver()
+def test_free_packing(mobile_management):
+    driver = mobile_management
     driver.implicitly_wait(50)
     base_page = BasePage(driver)
     try:
@@ -74,6 +76,8 @@ def test_free_packing():
             base_page.finish_task_in_menu()
         with allure.step("Отсканировать МХ EUR-000000344 для смены состояния МХ на Упаковано"):
             base_page.type_value('EUR-000000344')
+
+    #         дописать проверку в конце о том, что задача завершилась
     except Exception as ex:
         print(ex)
         allure.attach(

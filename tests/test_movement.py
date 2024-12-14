@@ -6,18 +6,18 @@ from allure_commons.types import Severity
 from appium.webdriver.common.appiumby import AppiumBy
 
 from config.base_page import BasePage
-from config.conftest import mobile_management
+from conftest import mobile_management
 
 
 @pytest.mark.БыстрыйЦикл
 @allure.tag("Внутренние операции")
 @allure.severity(Severity.CRITICAL)
-# @allure.id("4151")
+@allure.id("6482")
 @allure.label("owner", "Daria Tomilova")
 @allure.feature("Перемещение МХ")
 @allure.story("Перемещение МХ - базовые настройки")
-def test_movement():
-    driver = mobile_management()
+def test_movement(mobile_management):
+    driver = mobile_management
     driver.implicitly_wait(50)
     base_page = BasePage(driver)
     try:

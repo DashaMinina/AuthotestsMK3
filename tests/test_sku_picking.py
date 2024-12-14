@@ -5,19 +5,19 @@ import pytest
 from allure_commons.types import Severity
 from appium.webdriver.common.appiumby import AppiumBy
 
-from config.appium_utils import initialize_appium_driver
 from config.base_page import BasePage
+from conftest import mobile_management
 
 
 @pytest.mark.БыстрыйЦикл
 @allure.tag("Исходящий поток")
 @allure.severity(Severity.CRITICAL)
-@allure.id("#6359")
+@allure.id("6359")
 @allure.label("owner", "Daria Tomilova")
 @allure.feature("Отбор ОХ")
 @allure.story("Отбор ОХ - базовые настройки, МУ Основная")
-def test_sku_picking():
-    driver = initialize_appium_driver()
+def test_sku_picking(mobile_management):
+    driver = mobile_management
     driver.implicitly_wait(50)
     base_page = BasePage(driver)
     try:
@@ -66,8 +66,8 @@ def test_sku_picking():
         with allure.step("Ввести количество по плану (55)."):
             base_page.type_value('55')
         with allure.step("Проверка значений в полученной задаче"):
-            assert driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/position1_value").text == 'DOC2'
-        with allure.step("На операции «Положить» отсканировать ШК ячейки зоны ворот отгрузки (DOC2)"):
+            assert driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/position1_value").text == 'DOC-2'
+        with allure.step("На операции «Положить» отсканировать ШК ячейки зоны ворот отгрузки (DOC-2)"):
             base_page.type_value('DOC2')
         with allure.step("Получение всплывающей формы 'Получение задач' и выход к списку ОЗ"):
             base_page.assert_finish_sku_picking()

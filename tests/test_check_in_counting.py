@@ -4,66 +4,71 @@ import allure
 import pytest
 from allure_commons.types import Severity
 from appium.webdriver.common.appiumby import AppiumBy
-from appium.webdriver.webdriver import WebDriver
-from selene import browser, command
-from config.appium_utils import initialize_appium_driver
 from config.base_page import BasePage
-from config.conftest import mobile_management
+from conftest import mobile_management
 
 
 #потом обернуть авторизацию в фикстуру и перенести в confest
 @pytest.mark.БыстрыйЦикл
 @allure.tag("Входящий поток")
 @allure.severity(Severity.CRITICAL)
-@allure.id('#6194')
+@allure.id("6194")
 @allure.label("owner", "Daria Tomilova")
 @allure.feature("Приемка (пересчет)")
 @allure.story("Приемка (пересчет) - базовые настройки, МУ Основная и по СГ")
-def test_check_in_counting():
-    driver = mobile_management()
+def test_check_in_counting(mobile_management):
+    driver = mobile_management
     driver.implicitly_wait(50)
     base_page = BasePage(driver)
-    with allure.step("Авторизация в Axelot Start"):
-        base_page.authorization_start()
-        time.sleep(5)
-    with allure.step("Поиск нужной базы в списке доступных баз"):
-        base_page.scroll_into_veiw_base_and_click('WMSBaseTestDI')
-    with allure.step("Авторизация в МК3 (1/1)"):
-        base_page.authorization_MK('1', '1')
-        time.sleep(6)
-    with allure.step("Открыть ОЗ «Приемка (базовые настройки)» в меню «Приемка»."):
-        base_page.select_task_queue('Приемка', 'Приемка (базовые настройки)')
-    with allure.step("Выбрать документ «Ожидаемое поступление 00000000003» из списка."):
-        base_page.select_document('Ожидаемое поступление 00000000003 от 19.09.2024')
-    with allure.step("Отсканировать ШК ячейки, в которой будет выполняться приемка DOC1."):
-        base_page.type_value('DOC1')
-    with allure.step("Отсканировать ШК ранее сгенерированного МХ EUR-000000305."):
-        base_page.type_value('EUR-000000305')
-    with allure.step("Отсканировать ШК ОХ 'Кабель микрофонный' 2227930983724."):
-        base_page.type_value('2227930983724444444444')
-    with allure.step("Проверка значений в полученной задаче"):
-        assert driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/sku_value").text == 'Кабель микрофонный'
-        assert driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/state_value").text == 'Годен'
-        assert driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/qty_value").text == '100'
-        assert driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/total_qty_package").text == '0 / 100 пач.'
-    with allure.step("Ввести количество принимаемых ОХ по плану (100)."):
-        base_page.type_value('100')
-    with allure.step("Отсканировать ШК ОХ 'Средство для чистки объективов' 2704065335623."):
-        base_page.type_value('2704065335623')
-    with allure.step("Проверка значений в полученной задаче"):
-        assert driver.find_element(AppiumBy.ID,
-                                   "ru.axelot.wmsx5:id/sku_value").text == 'Средство для чистки объективов'
-        assert driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/state_value").text == 'Годен'
-        assert driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/total_qty_package").text == '0 / 1000 Флакон'
-    with allure.step("Отсканировать партию 18092024."):
-        base_page.type_value('18092024')
-    with allure.step("Ввести количество принимаемых ОХ по плану (1000)."):
-        base_page.type_value('1000')
-    with allure.step("Завершить пересчет МХ по кнопке «Завершить» в «Меню»."):
-        base_page.finish_task_in_menu()
-    with allure.step("Завершить приемку по ОП"):
-        base_page.finish_check_in_counting()
-
+    try:
+        with allure.step("Авторизация в Axelot Start"):
+            base_page.authorization_start()
+            time.sleep(5)
+        with allure.step("Поиск нужной базы в списке доступных баз"):
+            base_page.scroll_into_veiw_base_and_click('WMSBaseTestDI')
+        with allure.step("Авторизация в МК3 (1/1)"):
+            base_page.authorization_MK('1', '1')
+            time.sleep(6)
+        with allure.step("Открыть ОЗ «Приемка (базовые настройки)» в меню «Приемка»."):
+            base_page.select_task_queue('Приемка', 'Приемка (базовые настройки)')
+        with allure.step("Выбрать документ «Ожидаемое поступление 00000000003» из списка."):
+            base_page.select_document('Ожидаемое поступление 00000000003 от 19.09.2024')
+        with allure.step("Отсканировать ШК ячейки, в которой будет выполняться приемка DOC1."):
+            base_page.type_value('DOC1')
+        with allure.step("Отсканировать ШК ранее сгенерированного МХ EUR-000000305."):
+            base_page.type_value('EUR-000000305')
+        with allure.step("Отсканировать ШК ОХ 'Кабель микрофонный' 2227930983724."):
+            base_page.type_value('2227930983724')
+        with allure.step("Проверка значений в полученной задаче"):
+            assert driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/sku_value").text == 'Кабель микрофонный'
+            assert driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/state_value").text == 'Годен'
+            assert driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/qty_value").text == '100'
+            assert driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/total_qty_package").text == '0 / 100 пач.'
+        with allure.step("Ввести количество принимаемых ОХ по плану (100)."):
+            base_page.type_value('100')
+        with allure.step("Отсканировать ШК ОХ 'Средство для чистки объективов' 2704065335623."):
+            base_page.type_value('2704065335623')
+        with allure.step("Проверка значений в полученной задаче"):
+            assert driver.find_element(AppiumBy.ID,
+                                       "ru.axelot.wmsx5:id/sku_value").text == 'Средство для чистки объективов'
+            assert driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/state_value").text == 'Годен'
+            assert driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/total_qty_package").text == '0 / 1000 Флакон'
+        with allure.step("Отсканировать партию 18092024."):
+            base_page.type_value('18092024')
+        with allure.step("Ввести количество принимаемых ОХ по плану (1000)."):
+            base_page.type_value('1000')
+        with allure.step("Завершить пересчет МХ по кнопке «Завершить» в «Меню»."):
+            base_page.finish_task_in_menu()
+        with allure.step("Завершить приемку по ОП"):
+            base_page.finish_check_in_counting()
+    except Exception as ex:
+        print(ex)
+        allure.attach(
+            driver.get_screenshot_as_png(),
+            name="Скриншот ошибки",
+            attachment_type=allure.attachment_type.PNG
+        )
+        raise
 
 
 #         переписать, не выходит  из очереди, не нажимается driver.back()

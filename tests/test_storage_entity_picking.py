@@ -5,18 +5,19 @@ import pytest
 from allure_commons.types import Severity
 from appium.webdriver.common.appiumby import AppiumBy
 
-from config.appium_utils import initialize_appium_driver
 from config.base_page import BasePage
+from conftest import mobile_management
+
 
 @pytest.mark.БыстрыйЦикл
 @allure.tag("Исходящий поток")
 @allure.severity(Severity.CRITICAL)
-@allure.id("#6358")
+@allure.id("6358")
 @allure.label("owner", "Daria Tomilova")
 @allure.feature("Отбор МХ")
 @allure.story("Отбор МХ - базовые настройки")
-def test_storage_entity_picking():
-    driver = initialize_appium_driver()
+def test_storage_entity_picking(mobile_management):
+    driver = mobile_management
     driver.implicitly_wait(50)
     base_page = BasePage(driver)
 

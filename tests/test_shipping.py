@@ -4,18 +4,19 @@ import allure
 import pytest
 from allure_commons.types import Severity
 from appium.webdriver.common.appiumby import AppiumBy
-from config.appium_utils import initialize_appium_driver
 from config.base_page import BasePage
+from conftest import mobile_management
+
 
 @pytest.mark.БыстрыйЦикл
 @allure.tag("Исходящий поток")
 @allure.severity(Severity.CRITICAL)
-@allure.id("#6356")
+@allure.id("6356")
 @allure.label("owner", "Daria Tomilova")
 @allure.feature("Отгрузка")
 @allure.story("Отгрузка - базовые настройки")
-def test_shipping():
-    driver = initialize_appium_driver()
+def test_shipping(mobile_management):
+    driver = mobile_management
     driver.implicitly_wait(50)
     base_page = BasePage(driver)
     try:
@@ -40,6 +41,7 @@ def test_shipping():
             assert driver.find_element(AppiumBy.ID, "android:id/alertTitle").text == 'Подтверждение выполнения'
             assert driver.find_element(AppiumBy.ID, "android:id/message").text == 'Грузовое место EUR-000000350 отгружено?'
             driver.find_element(AppiumBy.ID, "android:id/button1").click()
+        # переписать проверку выхода из ОЗ
         # with allure.step("Получение всплывающей формы 'Получение задач' и выход к списку ОЗ"):
         #     base_page.assert_finish_shipping()
     except Exception as ex:

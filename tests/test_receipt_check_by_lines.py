@@ -3,52 +3,20 @@ import allure
 import pytest
 from allure_commons.types import Severity
 from appium.webdriver.common.appiumby import AppiumBy
-from selenium.common import NoSuchElementException
 
-from config.appium_utils import initialize_appium_driver
 from config.base_page import BasePage
+from conftest import mobile_management
 
-
-# # Хук для создания скриншота при падении теста
-# @pytest.hookimpl(tryfirst=True, hookwrapper=True)
-# def pytest_runtest_makereport(item, call):
-#     outcome = yield
-#     rep = outcome.get_result()
-#     if rep.when == 'call' and rep.failed:
-#         try:
-#             if 'browser' in item.fixturenames:  # assume this is fixture with webdriver
-#                 web_driver = item.funcargs['browser']
-#             else:
-#                 print('Fail to take screen-shot: no `browser` fixture')
-#                 return
-#             allure.attach(
-#                 web_driver.get_screenshot_as_png(),
-#                 name='screenshot',
-#                 attachment_type=allure.attachment_type.PNG
-#             )
-#             if web_driver.browser_name != FIREFOX_BROWSER_NAME:
-#                 # Firefox do not support js logs: https://github.com/SeleniumHQ/selenium/issues/2972
-#                 js_logs = web_driver.get_log('browser')
-#                 log_entries = [f"{entry['level']}: {entry['message']}" for entry in js_logs]
-#                 allure.attach(
-#                     '\n'.join(log_entries),
-#                     name='js console log:',
-#                     attachment_type=allure.attachment_type.TEXT,
-#                 )
-#
-#         except Exception as e:
-#             print(f'Fail to attach: {e}')
 
 @pytest.mark.БыстрыйЦикл
 @allure.tag("Входящий поток")
 @allure.severity(Severity.CRITICAL)
-@allure.id("#6191")
+@allure.id("6191")
 @allure.label("owner", "Daria Tomilova")
 @allure.feature("Контроль поступления по составу")
 @allure.story("Контроль поступления по составу - базовые настройки, МУ Основная и по СГ")
-def test_receipt_check_by_lines():
-    # Нужно переработать ассерты на отображение ячейки и ввод ячейки Doc-1 (на момент написания теста была блок ошибка)
-    driver = initialize_appium_driver()
+def test_receipt_check_by_lines(mobile_management):
+    driver = mobile_management
     driver.implicitly_wait(50)
     base_page = BasePage(driver)
     try:
@@ -87,6 +55,8 @@ def test_receipt_check_by_lines():
             base_page.type_value('100')
         with allure.step("Завершить пересчет МХ по кнопке «Завершить» в «Меню»."):
             base_page.finish_task_in_menu()
+        with allure.step("Получение всплывающей формы 'Получение задач' и выход к списку ОЗ"):
+            base_page.assert_finish_sku_picking()
         # with allure.step("Проверка формы завершения пересчета с расхождениями"):
         #     assert driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/report_title").text == 'Завершить пересчет с отклонениями?'
         #     assert driver.find_element(AppiumBy.ID,"ru.axelot.wmsx5:id/report_row_title").text == 'EUR-000000321'
@@ -99,8 +69,6 @@ def test_receipt_check_by_lines():
         #     assert driver.find_element(AppiumBy.ID, "ru.axelot.wmsx5:id/child_report_qty_plan").text == '/100'
         # with allure.step("Подтверждение расхождений."):
         #     base_page.finish_receipt_by_lines_with_discrepancies()
-
-        # дописать проверку на выхода формы Получение задач
 
     except Exception as ex:
         print(ex)
